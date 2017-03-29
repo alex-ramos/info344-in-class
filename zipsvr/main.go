@@ -23,7 +23,6 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 
 	w.Header().Add("Content-Type", "text/plain")
-	w.Header().Add("Access-Control-Allow_Origin", "*")
 
 	w.Write([]byte("hello " + name))
 }
@@ -34,6 +33,7 @@ func (zi zipIndex) zipsForCityHandler(w http.ResponseWriter, r *http.Request) {
 	lcity := strings.ToLower(city)
 
 	w.Header().Add("Content-Type", "application/json; charset=utf-8")
+	w.Header().Add("Access-Control-Allow-Origin", "*")
 
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(zi[lcity]); err != nil {

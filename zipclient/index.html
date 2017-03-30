@@ -12,25 +12,37 @@
 </head>
 <body>
     <script>
-        var city = $( "input[name ='City'" ).text;
-        fetch("http://localhost:8000/zips/city/" + city)
+        function getCityZip(city){
+        var x = city;
+        fetch("http://localhost:8000/zips/city/" + x)
             .then(function(resp){
                 return resp.json()
             })
             .then(function(data){
                 console.log(data)
+                for(var x = 0; x < data.length; x++){
+                    $( ".results" ).append((data[x].zip) + "\n");
+                }
             })
             .catch(function(err){
                 console.error(err)
-            })
-            
+            });
+        }
+        $(document).ready(function(){
+            $( "#search" ).click(function(){
+                $( ".results" ).empty();
+                console.log("Click");
+                var cityI = $( "#city" ).val();
+                getCityZip(cityI);
+            });
+        });   
     </script>
     <h1>Enter a city to get all of its zip codes!</h1>
     <form>
         City:<br>
-        <input type="text" name="City"><br>
+        <input type="text" id="city"><br>
     </form>
-    <button type="button">Search!</button>
-
+    <button id="search" type="button">Search!</button>
+    <div class="results"></div>
 </body>
 </html>

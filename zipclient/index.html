@@ -13,29 +13,30 @@
 <body>
     <script>
         function getCityZip(city){
-        var x = city;
-        fetch("http://localhost:8000/zips/city/" + x)
-            .then(function(resp){
-                return resp.json()
-            })
-            .then(function(data){
-                console.log(data)
-                for(var x = 0; x < data.length; x++){
-                    $( ".results" ).append((data[x].zip) + "\n");
-                }
-            })
-            .catch(function(err){
-                console.error(err)
+            var x = city;
+            fetch("http://138.68.253.32/zips/city/" + x)
+                .then(function(resp){
+                    return resp.json()
+                })
+                .then(function(data){
+                    console.log(data)
+                    for(var x = 0; x < data.length; x++){
+                        $( ".results" ).append((data[x].zip) + "\n");
+                    }
+                })
+                .catch(function(err){
+                    console.error(err)
             });
         }
-        $(document).ready(function(){
-            $( "#search" ).click(function(){
-                $( ".results" ).empty();
-                console.log("Click");
-                var cityI = $( "#city" ).val();
-                getCityZip(cityI);
-            });
-        });   
+            $(document).ready(function(){
+                $( "#search" ).click(function(){
+                    $( ".results" ).empty();
+                    console.log("Click");
+                    var cityI = $( "#city" ).val();
+                    console.log(cityI);
+                    getCityZip(cityI);
+                });
+            });   
     </script>
     <h1>Enter a city to get all of its zip codes!</h1>
     <form>

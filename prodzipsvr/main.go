@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-const defaultPort = "443"
+const defaultPort = "80"
 
 const (
 	headerContentType              = "Content-Type"

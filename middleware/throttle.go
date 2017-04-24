@@ -1,5 +1,14 @@
 package main
 
+import (
+	"net/http"
+	"time"
+
+	"log"
+
+	cache "github.com/patrickmn/go-cache"
+)
+
 /*
 TODO: Similar to the LogRequests middleware function, define a
 ThrottleRequests middleware function here that accepts two parameters:
@@ -25,3 +34,25 @@ Or if you're feeling adventurous, spin up a redis server using Docker,
 connect to it in your main() function, and pass a pointer to the redis client
 as a third parameter to your ThrottleRequests function.
 */
+
+func throttleRequests(maxRequests int, duration time.Duration) Adapter {
+	c := cache.New(duration, time.Second)
+	return func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			cAddr := r.RemoteAddr
+			reqs, found := c.Get(cAddr)
+			requests := 1
+			if !found {
+				c.Set(cAddr, 1, cache.DefaultExpiration)
+			} else {
+				requests = reqs.(int) + 1
+				c.Set(cAddr, requests, cache.DefaultExpiration)
+			}
+			if requests > maxRequests {
+				c.Set(cAddr, 0, cache.DefaultExpiration)
+				log.Fatal(http.StatusTooManyRequests)
+			}
+			handler.ServeHTTP(w, r)
+		})
+	}
+}

@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	addr := "localhost:4000"
+	addr := "localhost:4004"
 
 	mux := http.NewServeMux()
 	muxLogged := http.NewServeMux()

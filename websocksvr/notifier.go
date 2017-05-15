@@ -1,6 +1,8 @@
 package main
 
 import (
+	"sync"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -8,6 +10,7 @@ import (
 type Notifier struct {
 	eventq  chan interface{}
 	clients map[*websocket.Conn]bool
+	mu      sync.RWMutex
 	//TODO: add other fields you might need
 	//such as another channel or a mutex
 	//(either would work)
@@ -20,7 +23,11 @@ type Notifier struct {
 func NewNotifier() *Notifier {
 	//TODO: create, initialize and return
 	//a Notifier struct
-	return nil
+	return &Notifier{
+		eventq:  make(chan interface{}, 100),
+		clients: make(map[*websocket.Conn]bool),
+		mu:      sync.RWMutex{},
+	}
 }
 
 //Start begins a loop that checks for new events
@@ -32,6 +39,7 @@ func (n *Notifier) Start() {
 	//this should check for new events written
 	//to the `eventq` channel, and broadcast
 	//them to all of the web socket clients
+
 }
 
 //AddClient adds a new web socket client to the Notifer
@@ -41,7 +49,11 @@ func (n *Notifier) AddClient(client *websocket.Conn) {
 	//an HTTP handler, and each HTTP request is
 	//processed on its own goroutine, so your
 	//implementation here MUST be safe for concurrent use
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	n.clients[client] = true
 
+	n.readPump(client)
 }
 
 //Notify will add a new event to the event queue
